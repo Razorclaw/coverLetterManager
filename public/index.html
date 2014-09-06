@@ -56,11 +56,11 @@ body {
         </div>
         <div class="form-group">
           <label for="recipientInput">Recipient</label>
-          <input data-bind="value: recipient" type="text" id="recipientInput" class="form-control" placeholder="recipient">
+          <input type="text" id="recipientInput" class="form-control" placeholder="recipient" data-bind="value: recipient, valueUpdate: 'input'">
         </div>
         <div class="form-group">
           <label for="jobTitleInput">Job title</label>
-          <input data-bind="value: jobTitle" type="text" id="jobTitleInput" class="form-control" placeholder="jobTitle">
+          <input type="text" id="jobTitleInput" class="form-control" placeholder="jobTitle" data-bind="value: jobTitle, valueUpdate: 'input'">
         </div>
         <div class="form-group">
           <label for="previewInput">Preview</label>
