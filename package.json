@@ -1,0 +1,13 @@
+{
+  "name": "coverLetterManager",
+  "description": "Cover letter manager",
+  "version": "0.0.0",
+  "private": false,
+  "dependencies": {
+    "express": "4.8.8"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Razorclaw/coverLetterManager.git"
+  }
+}
