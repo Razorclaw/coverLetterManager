@@ -1,0 +1,23 @@
+{
+  "name": "Cover letter manager",
+  "version": "0.0.0",
+  "homepage": "https://github.com/Razorclaw/coverLetterManager",
+  "authors": [
+    "Anthony Garcia-Labiad <anthony.garlab@gmail.com>"
+  ],
+  "main": "index.html",
+  "moduleType": [
+    "node"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.2.0"
+  }
+}
