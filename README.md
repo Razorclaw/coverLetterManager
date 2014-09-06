@@ -1,0 +1,4 @@
+coverLetterManager
+==================
+
+Cover letter Manager
