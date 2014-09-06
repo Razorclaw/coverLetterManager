@@ -56,15 +56,23 @@ body {
         </div>
         <div class="form-group">
           <label for="recipientInput">Recipient</label>
-          <input type="text" id="recipientInput" class="form-control" placeholder="recipient" data-bind="value: recipient, valueUpdate: 'input'">
+          <input type="text" id="recipientInput" class="form-control" data-bind="value: recipient, valueUpdate: 'input'">
         </div>
         <div class="form-group">
           <label for="jobTitleInput">Job title</label>
-          <input type="text" id="jobTitleInput" class="form-control" placeholder="jobTitle" data-bind="value: jobTitle, valueUpdate: 'input'">
+          <input type="text" id="jobTitleInput" class="form-control" data-bind="value: jobTitle, valueUpdate: 'input'">
+        </div>
+        <div class="form-group">
+          <label for="mainLanguageInput">Main language/technologie</label>
+          <input type="text" id="mainLanguageInput" class="form-control" data-bind="value: mainLanguage, valueUpdate: 'input'">
+        </div>
+        <div class="form-group">
+          <label for="disciplineInput">Discipline</label>
+          <input type="text" id="disciplineInput" class="form-control" data-bind="value: discipline, valueUpdate: 'input'">
         </div>
         <div class="form-group">
           <label for="previewInput">Preview</label>
-          <textarea data-bind="text: preview" id="previewInput" class="form-control" placeholder="Cover letter preview"></textarea>
+          <textarea data-bind="text: preview" id="previewInput" class="form-control"></textarea>
         </div>
         <button type="submit" class="btn btn-default">Submit</button>
       </form>
@@ -79,6 +87,8 @@ function CoverLetterViewModel() {
   that.recipient = ko.observable("");
 
   that.jobTitle = ko.observable("software engineer");
+  that.mainLanguage = ko.observable("");
+  that.discipline = ko.observable("development");
 
   that.subject = ko.computed(function() {
     var recipientTitle = that.recipientTitle();
@@ -98,7 +108,19 @@ function CoverLetterViewModel() {
   });
 
   that.firstPart = ko.computed(function() {
-    return "As an experienced and passionate " + that.jobTitle() + ", I have been practising Java for many years.I have 3 years of professional experience in development, and I am very familiar with JAVA including JEE, Spring, Struts2, Hibernate and JBoss.";
+    var firstPart = "";
+
+    if (that.jobTitle() !== "") {
+      firstPart += "As an experienced and passionate " + that.jobTitle() + ", ";
+    }
+    if (that.mainLanguage() !== "") {
+      firstPart += "I have been practising " + that.mainLanguage() + " for many years. ";
+    }
+    if (that.discipline() !== "") {
+      firstPart += "I have 3 years of professional experience in " + that.discipline() + ", and I am very familiar with JAVA including JEE, Spring, Struts2, Hibernate and JBoss."
+    }
+
+    return firstPart;
   });
 
   that.quality = "I am a conscientious person who works hard and pays attention to detail. I am flexible, quick to pick up new skills and eager to learn from others. I also have lots of ideas and enjoy finding solutions to the problems I encounter.";
