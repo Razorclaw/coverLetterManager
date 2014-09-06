@@ -51,14 +51,34 @@ body {
       <form role="form">
         <div class="form-group">
           <label for="previewInput">Preview</label>
-          <textarea id="previewInput" class="form-control" placeholder="Cover letter preview"></textarea>
+          <textarea data-bind="text: preview" id="previewInput" class="form-control" placeholder="Cover letter preview"></textarea>
         </div>
         <button type="submit" class="btn btn-default">Submit</button>
       </form>
 	  
     </div><!-- /.container -->
 
-    <script src="js/jquery.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
+    <script src="js/knockout.js"></script>
+    <script>
+function CoverLetterViewModel() {
+  var that = this;
+
+  that.subject = "Dear Mr.XXX:";
+
+  that.firstPart = "As an experienced and passionate software engineer, I have been practising Java for many years.I have 3 years of professional experience in development, and I am very familiar with JAVA including JEE, Spring, Struts2, Hibernate and JBoss.";
+
+  that.quality = "I am a conscientious person who works hard and pays attention to detail. I am flexible, quick to pick up new skills and eager to learn from others. I also have lots of ideas and enjoy finding solutions to the problems I encounter.";
+
+  that.availability = "I am available immediately, hoping for an interview soon.";
+
+  that.signature = "Regards,\nAnthony Garcia-Labiad";
+
+  that.preview = ko.computed(function() {
+    return that.subject + "\n\n" + that.firstPart + "\n" + that.quality + "\n" + that.availability + "\n\n" + that.signature;
+  });
+}
+
+ko.applyBindings(new CoverLetterViewModel());
+    </script>
   </body>
 </html>
