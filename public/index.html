@@ -51,8 +51,12 @@ body {
       <h1>Create a cover letter</h1>
       <form role="form">
         <div class="form-group">
-          <label for="">Recipient</label>
+          <label for="recipientInput">Recipient</label>
           <input data-bind="value: recipient" type="text" id="recipientInput" class="form-control" placeholder="recipient">
+        </div>
+        <div class="form-group">
+          <label for="jobTitleInput">Job title</label>
+          <input data-bind="value: jobTitle" type="text" id="jobTitleInput" class="form-control" placeholder="jobTitle">
         </div>
         <div class="form-group">
           <label for="previewInput">Preview</label>
@@ -68,6 +72,8 @@ function CoverLetterViewModel() {
   var that = this;
 
   that.recipient = ko.observable("");
+
+  that.jobTitle = ko.observable("software engineer");
 
   that.subject = ko.computed(function() {
     var recipient = that.recipient();
@@ -85,7 +91,9 @@ function CoverLetterViewModel() {
     return "Dear Mr. " + names.join(" ") + ":\n\n";
   });
 
-  that.firstPart = "As an experienced and passionate software engineer, I have been practising Java for many years.I have 3 years of professional experience in development, and I am very familiar with JAVA including JEE, Spring, Struts2, Hibernate and JBoss.";
+  that.firstPart = ko.computed(function() {
+    return "As an experienced and passionate " + that.jobTitle() + ", I have been practising Java for many years.I have 3 years of professional experience in development, and I am very familiar with JAVA including JEE, Spring, Struts2, Hibernate and JBoss.";
+  });
 
   that.quality = "I am a conscientious person who works hard and pays attention to detail. I am flexible, quick to pick up new skills and eager to learn from others. I also have lots of ideas and enjoy finding solutions to the problems I encounter.";
 
@@ -94,7 +102,7 @@ function CoverLetterViewModel() {
   that.signature = "Regards,\nAnthony Garcia-Labiad";
 
   that.preview = ko.computed(function() {
-    return that.subject() + that.firstPart + "\n" + that.quality + "\n" + that.availability + "\n\n" + that.signature;
+    return that.subject() + that.firstPart() + "\n" + that.quality + "\n" + that.availability + "\n\n" + that.signature;
   });
 }
 
