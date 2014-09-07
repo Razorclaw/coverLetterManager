@@ -54,6 +54,20 @@ body {
       <form role="form" data-bind="submit: save">
 
         <div class="panel panel-primary">
+          <div class="panel-heading">Offer</div>
+          <div class="panel-body">
+            <div class="form-group">
+              <label for="offerLabelInput">Label</label>
+              <input type="text" id="offerLabelInput" class="form-control" data-bind="value: offerLabel">
+            </div>
+            <div class="form-group">
+              <label for="offerUrlInput">Url</label>
+              <input type="text" id="offerUrlInput" class="form-control" data-bind="value: offerUrl">
+            </div>
+          </div>
+        </div>
+
+        <div class="panel panel-primary">
           <div class="panel-heading">Recipient</div>
           <div class="panel-body">
             <div class="form-group">
@@ -64,6 +78,18 @@ body {
             <div class="form-group">
               <label for="recipientNameInput">Name</label>
               <input type="text" id="recipientNameInput" class="form-control" data-bind="value: recipientName, valueUpdate: 'input'">
+            </div>
+            <div class="form-group">
+              <label for="recipientMailInput">Mail</label>
+              <input type="text" id="recipientMailInput" class="form-control" data-bind="value: recipientMail">
+            </div>
+            <div class="form-group">
+              <label for="recipientPhoneInput">Phone</label>
+              <input type="text" id="recipientPhoneInput" class="form-control" data-bind="value: recipientPhone">
+            </div>
+            <div class="form-group">
+              <label for="recipientLinkedInInput">LinkedIn</label>
+              <input type="text" id="recipientLinkedInInput" class="form-control" data-bind="value: recipientLinkedIn">
             </div>
           </div>
         </div>
@@ -103,8 +129,14 @@ function CoverLetterViewModel() {
 
   that.guid = guid();
 
+  that.offerLabel = ko.observable("");
+  that.offerUrl = ko.observable("");
+
   that.recipientTitle = ko.observable("");
   that.recipientName = ko.observable("");
+  that.recipientMail = ko.observable("");
+  that.recipientPhone = ko.observable("");
+  that.recipientLinkedIn = ko.observable("");
 
   that.jobTitle = ko.observable("software engineer");
   that.mainLanguage = ko.observable("");
