@@ -49,27 +49,42 @@ body {
     <div class="container">
 
       <h1>Create a cover letter</h1>
+
       <form role="form">
-        <div class="form-group">
-          <label><input type="radio" value="Mr" data-bind="checked: recipientTitle"> Mr</label>
-          <label><input type="radio" value="Ms" data-bind="checked: recipientTitle"> Ms</label>
+
+        <div class="panel panel-primary">
+          <div class="panel-heading">Recipient</div>
+          <div class="panel-body">
+            <div class="form-group">
+              <label>Title</label>
+              <label class="control-label"><input type="radio" value="Mr" data-bind="checked: recipientTitle"> Mr</label>
+              <label class="control-label"><input type="radio" value="Ms" data-bind="checked: recipientTitle"> Ms</label>
+            </div>
+            <div class="form-group">
+              <label for="recipientNameInput">Name</label>
+              <input type="text" id="recipientNameInput" class="form-control" data-bind="value: recipientName, valueUpdate: 'input'">
+            </div>
+          </div>
         </div>
-        <div class="form-group">
-          <label for="recipientInput">Recipient</label>
-          <input type="text" id="recipientInput" class="form-control" data-bind="value: recipient, valueUpdate: 'input'">
+
+        <div class="panel panel-primary">
+          <div class="panel-heading">First Part</div>
+          <div class="panel-body">
+            <div class="form-group">
+              <label for="jobTitleInput">Job title</label>
+              <input type="text" id="jobTitleInput" class="form-control" data-bind="value: jobTitle, valueUpdate: 'input'">
+            </div>
+            <div class="form-group">
+              <label for="mainLanguageInput">Main language/technologie</label>
+              <input type="text" id="mainLanguageInput" class="form-control" data-bind="value: mainLanguage, valueUpdate: 'input'">
+            </div>
+            <div class="form-group">
+              <label for="disciplineInput">Discipline</label>
+              <input type="text" id="disciplineInput" class="form-control" data-bind="value: discipline, valueUpdate: 'input'">
+            </div>
+          </div>
         </div>
-        <div class="form-group">
-          <label for="jobTitleInput">Job title</label>
-          <input type="text" id="jobTitleInput" class="form-control" data-bind="value: jobTitle, valueUpdate: 'input'">
-        </div>
-        <div class="form-group">
-          <label for="mainLanguageInput">Main language/technologie</label>
-          <input type="text" id="mainLanguageInput" class="form-control" data-bind="value: mainLanguage, valueUpdate: 'input'">
-        </div>
-        <div class="form-group">
-          <label for="disciplineInput">Discipline</label>
-          <input type="text" id="disciplineInput" class="form-control" data-bind="value: discipline, valueUpdate: 'input'">
-        </div>
+
         <div class="form-group">
           <label for="previewInput">Preview</label>
           <textarea data-bind="text: preview" id="previewInput" class="form-control"></textarea>
@@ -84,21 +99,21 @@ function CoverLetterViewModel() {
   var that = this;
 
   that.recipientTitle = ko.observable("");
-  that.recipient = ko.observable("");
+  that.recipientName = ko.observable("");
 
   that.jobTitle = ko.observable("software engineer");
   that.mainLanguage = ko.observable("");
   that.discipline = ko.observable("development");
 
-  that.subject = ko.computed(function() {
+  that.recipient = ko.computed(function() {
     var recipientTitle = that.recipientTitle();
-    var recipient = that.recipient();
+    var name = that.recipientName();
 
-    if (recipientTitle === "" || recipient === "") {
+    if (recipientTitle === "" || name === "") {
       return "";
     }
 
-    var names = recipient.split(" ");
+    var names = name.split(" ");
 
     if (names.length > 1) {
       names = names.splice(1, names.length);
@@ -130,7 +145,7 @@ function CoverLetterViewModel() {
   that.signature = "Regards,\nAnthony Garcia-Labiad";
 
   that.preview = ko.computed(function() {
-    return that.subject() + that.firstPart() + "\n" + that.quality + "\n" + that.availability + "\n\n" + that.signature;
+    return that.recipient() + that.firstPart() + "\n" + that.quality + "\n" + that.availability + "\n\n" + that.signature;
   });
 }
 
