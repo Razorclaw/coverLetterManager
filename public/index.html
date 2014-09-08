@@ -9,6 +9,7 @@
     <link href="css/bootstrap.min.css" rel="stylesheet">
 
     <script src="js/jquery.min.js"></script>
+    <script src="js/sammy.min.js"></script>
     <script src="js/knockout.js"></script>
   	<style>
 /* Move down content because we have a fixed navbar that is 50px tall */
@@ -49,6 +50,23 @@ body {
 
     <div class="container">
 
+      <h1>List of cover letters</h1>
+
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Label</th><th>Recipient</th><th>Date</th>
+          </tr>
+        </thead>
+        <tbody data-bind="foreach: coverLetters">
+          <tr>
+            <td><a data-bind="text: value.label, attr: {href: '#guid=' + id}"></a></td>
+            <td data-bind="text: value.recipient"></td>
+            <td data-bind="text: value.date"></td>
+          </tr>
+        </tbody>
+      </table>
+
       <h1>Create a cover letter</h1>
 
       <form role="form" data-bind="submit: save">
@@ -58,7 +76,7 @@ body {
           <div class="panel-body">
             <div class="form-group">
               <label for="offerLabelInput">Label</label>
-              <input type="text" id="offerLabelInput" class="form-control" data-bind="value: offerLabel">
+              <input type="text" id="offerLabelInput" class="form-control" data-bind="value: offerLabel" required>
             </div>
             <div class="form-group">
               <label for="offerUrlInput">Url</label>
@@ -186,6 +204,7 @@ function CoverLetterViewModel() {
   });
 
   that.save = function() {
+    that.date = (new Date()).toISOString();
     $.ajax({
       type: "PUT",
       url: "http://127.0.0.1:5984/cover_letter_manager/" + that.guid,
@@ -199,6 +218,20 @@ function CoverLetterViewModel() {
       console.error(r);
     });
   }
+
+  that.coverLetters = ko.observableArray([]);
+
+  $.getJSON("http://127.0.0.1:5984/cover_letter_manager/_design/load_all/_view/load_all", function(result) {
+    that.coverLetters(result.rows);
+  });
+
+  $.sammy(function() {
+    this.get('#guid=:guid', function() {
+      console.log(this.params.guid);
+    });
+
+    //this.get('', function() { this.app.runRoute('get', '#create') });
+  }).run();
 }
 
 ko.applyBindings(new CoverLetterViewModel());
