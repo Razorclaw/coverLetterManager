@@ -96,6 +96,20 @@ body {
           </div>
         </div>
 
+        <div class="panel panel-primary" data-bind="with: company">
+          <div class="panel-heading">Company</div>
+          <div class="panel-body">
+            <div class="form-group">
+              <label for="companyNameInput">Name</label>
+              <input type="text" id="companyNameInput" class="form-control" data-bind="value: name">
+            </div>
+            <div class="form-group">
+              <label for="companyUrlInput">Web site</label>
+              <input type="text" id="companyUrlInput" class="form-control" data-bind="value: url">
+            </div>
+          </div>
+        </div>
+
         <div class="panel panel-primary">
           <div class="panel-heading">Recipient</div>
           <div class="panel-body">
@@ -161,6 +175,11 @@ function CoverLetterViewModel() {
   that.offerLabel = ko.observable("");
   that.offerUrl = ko.observable("");
 
+  that.company = {
+    name: ko.observable(""),
+    url: ko.observable(""),
+  };
+
   that.recipientTitle = ko.observable("");
   that.recipientName = ko.observable("");
   that.recipientMail = ko.observable("");
@@ -210,15 +229,23 @@ function CoverLetterViewModel() {
 
   that.signature = "Regards,\nAnthony Garcia-Labiad";
 
-  that.preview = ko.computed(function() {
-    return that.recipient() + that.firstPart() + "\n" + that.quality + "\n" + that.availability + "\n\n" + that.signature;
+  that.preview = ko.pureComputed({
+    read: function() {
+      return that.recipient() + that.firstPart() + "\n" + that.quality + "\n" + that.availability + "\n\n" + that.signature;
+    },
+    write: function(value) {
+      return value;
+    }
   });
+
+  var baseUrl = "http://127.0.0.1:5984/cover_letter_manager/";
 
   that.save = function() {
     that.date = (new Date()).toISOString();
+    that.letterContent = $("#previewInput").val();
     $.ajax({
       type: "PUT",
-      url: "http://127.0.0.1:5984/cover_letter_manager/" + that.guid,
+      url: baseUrl + that.guid,
       contentType: "application/json",
       dataType: "json",
       data: ko.toJSON(that)
@@ -232,13 +259,34 @@ function CoverLetterViewModel() {
 
   that.coverLetters = ko.observableArray([]);
 
-  $.getJSON("http://127.0.0.1:5984/cover_letter_manager/_design/load_all/_view/load_all", function(result) {
+  $.getJSON(baseUrl + "_design/load_all/_view/load_all", function(result) {
     that.coverLetters(result.rows);
   });
 
   $.sammy(function() {
     this.get('#guid=:guid', function() {
-      console.log(this.params.guid);
+      $.getJSON(baseUrl + this.params.guid, function(cl) {
+        that._rev = cl._rev;
+        that.guid = cl.guid;
+
+        that.offerLabel(cl.offerLabel);
+        that.offerUrl(cl.offerUrl);
+
+        that.company.name(cl.company.name);
+        that.company.url(cl.company.url);
+
+        that.recipientTitle(cl.recipientTitle);
+        that.recipientName(cl.recipientName);
+        that.recipientMail(cl.recipientMail);
+        that.recipientPhone(cl.recipientPhone);
+        that.recipientLinkedIn(cl.recipientLinkedIn);
+
+        that.jobTitle(cl.jobTitle);
+        that.mainLanguage(cl.mainLanguage);
+        that.discipline(cl.discipline);
+
+        $("#previewInput").val(cl.letterContent);
+      });
     });
 
     //this.get('', function() { this.app.runRoute('get', '#create') });
