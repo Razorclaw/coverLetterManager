@@ -8,7 +8,7 @@
 
     <link href="css/bootstrap.min.css" rel="stylesheet">
 
-    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="js/jquery.min.js"></script>
     <script src="js/sammy.min.js"></script>
     <script src="js/knockout.js"></script>
   	<style>
@@ -66,14 +66,16 @@ body {
       <table class="table">
         <thead>
           <tr>
-            <th>Label</th><th>Recipient</th><th>Date</th>
+            <th>Label</th><th>Company</th><th>Recipient</th><th>Date</th><th><i class="glyphicon glyphicon-trash"></i></th>
           </tr>
         </thead>
         <tbody data-bind="foreach: coverLetters">
           <tr>
             <td><a data-bind="text: value.label, attr: {href: '#guid=' + id}"></a></td>
+            <td data-bind="text: value.company"></td>
             <td data-bind="text: value.recipient"></td>
             <td data-bind="text: value.date"></td>
+            <td data-bind="click: $root.remove" style="color: red; cursor: pointer"><i class="glyphicon glyphicon-remove"></i></td>
           </tr>
         </tbody>
       </table>
@@ -248,6 +250,24 @@ function CoverLetterViewModel() {
 
   var baseUrl = "http://127.0.0.1:5984/cover_letter_manager/";
 
+  function loadCoverLetters() {
+    $.getJSON(baseUrl + "_design/load_all/_view/load_all", function(result) {
+      that.coverLetters(result.rows);
+    });
+  }
+
+  that.remove = function(coverLetter) {
+    console.log(coverLetter);
+    $.ajax({
+      type: "DELETE",
+      url: baseUrl + coverLetter.id + "?rev=" + coverLetter.value.rev
+    }).done(function(result) {
+      loadCoverLetters();
+    }).fail(function(j, t, e) {
+      console.error(e);
+    });
+  }
+
   that.save = function() {
     that.coverLetter.date = (new Date()).toISOString();
     that.coverLetter.letterContent = $("#previewInput").val();
@@ -267,9 +287,7 @@ function CoverLetterViewModel() {
     });
   }
 
-  $.getJSON(baseUrl + "_design/load_all/_view/load_all", function(result) {
-    that.coverLetters(result.rows);
-  });
+  loadCoverLetters();
 
   $.sammy(function() {
     this.get('#guid=:guid', function() {
