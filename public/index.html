@@ -8,7 +8,7 @@
 
     <link href="css/bootstrap.min.css" rel="stylesheet">
 
-    <script src="js/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="js/sammy.min.js"></script>
     <script src="js/knockout.js"></script>
   	<style>
@@ -80,7 +80,7 @@ body {
 
       <h1>Create a cover letter</h1>
 
-      <form role="form" data-bind="submit: save">
+      <form id="coverLetterForm" data-bind="with: coverLetter">
 
         <div class="panel panel-primary">
           <div class="panel-heading">Offer</div>
@@ -159,7 +159,7 @@ body {
           <label for="previewInput">Preview</label>
           <textarea data-bind="text: preview" id="previewInput" class="form-control"></textarea>
         </div>
-        <button type="submit" class="btn btn-default">Submit</button>
+        <button class="btn btn-default" data-bind="click: $root.save">Save</button>
       </form>
 	  
     </div><!-- /.container -->
@@ -167,10 +167,10 @@ body {
     <script>
 function guid(a,b){for(b=a='';a++<36;b+=a*51&52?(a^15?8^Math.random()*(a^20?16:4):4).toString(16):'-');return b};
 
-function CoverLetterViewModel() {
+function CoverLetter(id) {
   var that = this;
 
-  that.guid = guid();
+  that.guid = id;
 
   that.offerLabel = ko.observable("");
   that.offerUrl = ko.observable("");
@@ -237,27 +237,35 @@ function CoverLetterViewModel() {
       return value;
     }
   });
+}
+
+function CoverLetterViewModel() {
+  var that = this;
+
+  that.coverLetters = ko.observableArray([]);
+
+  that.coverLetter = new CoverLetter(guid());
 
   var baseUrl = "http://127.0.0.1:5984/cover_letter_manager/";
 
   that.save = function() {
-    that.date = (new Date()).toISOString();
-    that.letterContent = $("#previewInput").val();
+    that.coverLetter.date = (new Date()).toISOString();
+    that.coverLetter.letterContent = $("#previewInput").val();
+    var data = ko.toJSON(that.coverLetter);
+
     $.ajax({
       type: "PUT",
-      url: baseUrl + that.guid,
+      url: baseUrl + that.coverLetter.guid,
       contentType: "application/json",
       dataType: "json",
-      data: ko.toJSON(that)
+      data: data
     }).done(function(result) {
-      that._rev = result.rev;
+      that.coverLetter._rev = result.rev;
       console.log(result);
     }).error(function(j,h,r) {
       console.error(r);
     });
   }
-
-  that.coverLetters = ko.observableArray([]);
 
   $.getJSON(baseUrl + "_design/load_all/_view/load_all", function(result) {
     that.coverLetters(result.rows);
@@ -266,30 +274,30 @@ function CoverLetterViewModel() {
   $.sammy(function() {
     this.get('#guid=:guid', function() {
       $.getJSON(baseUrl + this.params.guid, function(cl) {
-        that._rev = cl._rev;
-        that.guid = cl.guid;
+        that.coverLetter._rev = cl._rev;
+        that.coverLetter.guid = cl.guid;
 
-        that.offerLabel(cl.offerLabel);
-        that.offerUrl(cl.offerUrl);
+        that.coverLetter.offerLabel(cl.offerLabel);
+        that.coverLetter.offerUrl(cl.offerUrl);
 
-        that.company.name(cl.company.name);
-        that.company.url(cl.company.url);
+        that.coverLetter.company.name(cl.company.name);
+        that.coverLetter.company.url(cl.company.url);
 
-        that.recipientTitle(cl.recipientTitle);
-        that.recipientName(cl.recipientName);
-        that.recipientMail(cl.recipientMail);
-        that.recipientPhone(cl.recipientPhone);
-        that.recipientLinkedIn(cl.recipientLinkedIn);
+        that.coverLetter.recipientTitle(cl.recipientTitle);
+        that.coverLetter.recipientName(cl.recipientName);
+        that.coverLetter.recipientMail(cl.recipientMail);
+        that.coverLetter.recipientPhone(cl.recipientPhone);
+        that.coverLetter.recipientLinkedIn(cl.recipientLinkedIn);
 
-        that.jobTitle(cl.jobTitle);
-        that.mainLanguage(cl.mainLanguage);
-        that.discipline(cl.discipline);
+        that.coverLetter.jobTitle(cl.jobTitle);
+        that.coverLetter.mainLanguage(cl.mainLanguage);
+        that.coverLetter.discipline(cl.discipline);
 
         $("#previewInput").val(cl.letterContent);
       });
     });
 
-    //this.get('', function() { this.app.runRoute('get', '#create') });
+    this.get('', function() { /*this.app.runRoute('get', '#create')*/ });
   }).run();
 }
 
