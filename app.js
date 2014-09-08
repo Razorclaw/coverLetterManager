@@ -3,11 +3,6 @@ var compression = require('compression');
 
 var app = express();
 
-/*
-app.get('/', function(req, res){
-  res.send('Hello World');
-});*/
-
 var oneDay = 86400000;
 
 app.use(compression({threshold: 512}));

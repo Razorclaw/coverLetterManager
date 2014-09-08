@@ -80,6 +80,8 @@ body {
         </tbody>
       </table>
 
+      <a href="#" class="btn btn-success"><i class="glyphicon glyphicon-plus"></i>New</a>
+
       <h1>Create a cover letter</h1>
 
       <form id="coverLetterForm" data-bind="with: coverLetter">
@@ -169,28 +171,47 @@ body {
     <script>
 function guid(a,b){for(b=a='';a++<36;b+=a*51&52?(a^15?8^Math.random()*(a^20?16:4):4).toString(16):'-');return b};
 
-function CoverLetter(id) {
+var DEFAULT_COVER_LETTER = {
+  offerLabel: "",
+  offerUrl: "",
+
+  company: {name: "", url: ""},
+
+  recipientTitle: "",
+  recipientName: "",
+  recipientMail: "",
+  recipientPhone: "",
+  recipientLinkedIn: "",
+
+  jobTitle: "software engineer",
+  mainLanguage: "",
+  discipline: "development",
+};
+
+function CoverLetter(data) {
   var that = this;
+  var cl = data || DEFAULT_COVER_LETTER;
 
-  that.guid = id;
+  that.guid = cl.guid || guid();
+  that._rev = cl._rev;
 
-  that.offerLabel = ko.observable("");
-  that.offerUrl = ko.observable("");
+  that.offerLabel = ko.observable(cl.offerLabel);
+  that.offerUrl = ko.observable(cl.offerUrl);
 
   that.company = {
-    name: ko.observable(""),
-    url: ko.observable(""),
+    name: ko.observable(cl.company.name),
+    url: ko.observable(cl.company.url),
   };
 
-  that.recipientTitle = ko.observable("");
-  that.recipientName = ko.observable("");
-  that.recipientMail = ko.observable("");
-  that.recipientPhone = ko.observable("");
-  that.recipientLinkedIn = ko.observable("");
+  that.recipientTitle = ko.observable(cl.recipientTitle);
+  that.recipientName = ko.observable(cl.recipientName);
+  that.recipientMail = ko.observable(cl.recipientMail);
+  that.recipientPhone = ko.observable(cl.recipientPhone);
+  that.recipientLinkedIn = ko.observable(cl.recipientLinkedIn);
 
-  that.jobTitle = ko.observable("software engineer");
-  that.mainLanguage = ko.observable("");
-  that.discipline = ko.observable("development");
+  that.jobTitle = ko.observable(cl.jobTitle);
+  that.mainLanguage = ko.observable(cl.mainLanguage);
+  that.discipline = ko.observable(cl.discipline);
 
   that.recipient = ko.computed(function() {
     var recipientTitle = that.recipientTitle();
@@ -246,7 +267,7 @@ function CoverLetterViewModel() {
 
   that.coverLetters = ko.observableArray([]);
 
-  that.coverLetter = new CoverLetter(guid());
+  that.coverLetter = ko.observable(new CoverLetter());
 
   var baseUrl = "http://127.0.0.1:5984/cover_letter_manager/";
 
@@ -269,19 +290,22 @@ function CoverLetterViewModel() {
   }
 
   that.save = function() {
-    that.coverLetter.date = (new Date()).toISOString();
-    that.coverLetter.letterContent = $("#previewInput").val();
-    var data = ko.toJSON(that.coverLetter);
+    var coverLetter = that.coverLetter();
+    coverLetter.date = (new Date()).toISOString();
+    coverLetter.letterContent = $("#previewInput").val();
+    var data = ko.toJSON(coverLetter);
 
     $.ajax({
       type: "PUT",
-      url: baseUrl + that.coverLetter.guid,
+      url: baseUrl + coverLetter.guid,
       contentType: "application/json",
       dataType: "json",
       data: data
     }).done(function(result) {
-      that.coverLetter._rev = result.rev;
+      coverLetter._rev = result.rev;
+      loadCoverLetters();
       console.log(result);
+      location.href = "#guid=" + coverLetter.guid;
     }).error(function(j,h,r) {
       console.error(r);
     });
@@ -291,31 +315,17 @@ function CoverLetterViewModel() {
 
   $.sammy(function() {
     this.get('#guid=:guid', function() {
-      $.getJSON(baseUrl + this.params.guid, function(cl) {
-        that.coverLetter._rev = cl._rev;
-        that.coverLetter.guid = cl.guid;
-
-        that.coverLetter.offerLabel(cl.offerLabel);
-        that.coverLetter.offerUrl(cl.offerUrl);
-
-        that.coverLetter.company.name(cl.company.name);
-        that.coverLetter.company.url(cl.company.url);
-
-        that.coverLetter.recipientTitle(cl.recipientTitle);
-        that.coverLetter.recipientName(cl.recipientName);
-        that.coverLetter.recipientMail(cl.recipientMail);
-        that.coverLetter.recipientPhone(cl.recipientPhone);
-        that.coverLetter.recipientLinkedIn(cl.recipientLinkedIn);
-
-        that.coverLetter.jobTitle(cl.jobTitle);
-        that.coverLetter.mainLanguage(cl.mainLanguage);
-        that.coverLetter.discipline(cl.discipline);
-
-        $("#previewInput").val(cl.letterContent);
-      });
+      if (that.coverLetter.guid != this.params.guid) {
+        $.getJSON(baseUrl + this.params.guid, function(cl) {
+          that.coverLetter(new CoverLetter(cl));
+          $("#previewInput").val(cl.letterContent);
+        });
+      }
     });
 
-    this.get('', function() { /*this.app.runRoute('get', '#create')*/ });
+    this.get('', function() {
+      that.coverLetter(new CoverLetter());
+    });
   }).run();
 }
 
