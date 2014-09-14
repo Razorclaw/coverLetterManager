@@ -7,4 +7,3 @@ TODO
 ----
 
 - Add input comment
-- external links: target blank
