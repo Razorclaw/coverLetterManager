@@ -2,7 +2,7 @@
   "name": "coverLetterManager",
   "description": "Cover letter manager",
   "version": "0.0.0",
-  "private": false,
+  "main": "app.js",
   "dependencies": {
     "express": "4.8.8",
     "compression": "1.0.11"
@@ -10,5 +10,11 @@
   "repository": {
     "type": "git",
     "url": "git://github.com/Razorclaw/coverLetterManager.git"
-  }
+  },
+  "author": "Anthony GARCIA",
+  "license": "GPL",
+  "bugs": {
+    "url": "https://github.com/Razorclaw/coverLetterManager/issues"
+  },
+  "homepage": "https://github.com/Razorclaw/coverLetterManager"
 }
